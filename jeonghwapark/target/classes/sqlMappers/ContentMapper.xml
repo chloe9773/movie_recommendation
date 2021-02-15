@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="content">
+	<insert id="setContact" parameterType="com.jeonghwapark.portfolio.model.QuestionVO">
+		<selectKey resultType="int" keyProperty="ref" order="BEFORE">
+			SELECT IFNULL(MAX(ref), 0) + 1 FROM yf_question  
+		</selectKey>
+		INSERT INTO yf_question 
+		SET qTitle = #{qTitle}, qContent = #{qContent}, qWriter = #{qWriter}, regdate = NOW(), 
+		fileName = #{fileName}, fileOriName = #{fileOriName}, fileUrl = #{fileUrl},
+		ref = #{ref}, reStep = 0, reLevel = 0
+	</insert>
+	
+	<select id="chkWriter" parameterType="hashmap" resultType="int">
+		SELECT COUNT(qid) FROM yf_question WHERE qWriter = #{qWriter}
+	</select>
+	
+	<update id="createTbl">
+		${str}
+	</update>
+	
+	<insert id="insertQnumTbl">
+		${str}
+	</insert>
+	
+	<select id="getID" parameterType="com.jeonghwapark.portfolio.model.QuestionVO" resultType="int">
+		SELECT qid FROM yf_question WHERE qWriter = #{qWriter} AND qTitle = #{qTitle} AND qCheck != 1 
+	</select>
+	
+	<update id="checkID" parameterType="int">
+		UPDATE yf_question SET qCheck = 1 WHERE qid = #{qid}
+	</update>
+	
+	<select id="getQuestionList" parameterType="hashmap" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+		SELECT qid, qTitle, qContent, regdate, fileName, fileOriName, fileUrl, ref, reStep, reLevel, qCheck FROM yf_question 
+		WHERE qWriter = #{mUserName}
+	</select>
+	
+	<select id="getArticleOne" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+		SELECT * FROM yf_question WHERE qid = #{qid}
+	</select>
+	
+	<update id="updateContact" parameterType="com.jeonghwapark.portfolio.model.QuestionVO">
+		UPDATE yf_question SET qTitle = #{qTitle}, qContent = #{qContent}, fileName = #{fileName}, fileUrl = #{fileUrl} WHERE qid = #{qid}
+	</update>
+	
+	<delete id="deleteMyContact" parameterType="com.jeonghwapark.portfolio.model.QuestionVO">
+		DELETE FROM ${qWriter}_question WHERE id = #{qid}
+	</delete>
+	
+	<delete id="deleteContact" parameterType="com.jeonghwapark.portfolio.model.QuestionVO">
+		DELETE FROM yf_question WHERE qid = #{qid}
+	</delete>
+	
+	<select id="getCount" parameterType="com.jeonghwapark.portfolio.model.QuestionVO" resultType="int">
+		SELECT * FROM ${qWriter}_question;
+ 	</select>
+ 	
+ 	<update id="dropTbl">
+ 		${str}
+ 	</update>
+	
+</mapper>

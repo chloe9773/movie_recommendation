@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="calendar">
+	<insert id="setCal" parameterType="com.jeonghwapark.portfolio.model.CalVO">
+		INSERT INTO yf_calendar SET startDate = #{startDate}, endDate = #{endDate}, calContent = #{calContent}, mUserName = #{mUserName}
+	</insert>
+	
+	<select id="getCal" resultType="com.jeonghwapark.portfolio.model.CalVO">
+		SELECT * FROM yf_calendar
+	</select>
+</mapper>

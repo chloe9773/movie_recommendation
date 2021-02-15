@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+
+	<insert id="setBoard" parameterType="com.jeonghwapark.portfolio.model.BoardVO">
+		INSERT INTO yf_board SET 
+			boardCode = #{boardCode},
+			boardDivision = #{boardDivision},
+			boardMaker = #{boardMaker},
+			boardTitle = #{boardTitle},
+			boardRead = #{boardRead},
+			boardWrite = #{boardWrite},
+			boardReply = #{boardReply},
+			boardDownload = #{boardDownload},
+			boardRegdate = now(),
+			boardAdmin = #{boardAdmin}
+	</insert>
+
+	<insert id="createArticleTbl">
+		${str}
+	</insert>
+	
+	<insert id="createCommentTbl">
+		${str}
+	</insert>
+	
+	<select id="getManagerList" resultType="com.jeonghwapark.portfolio.model.MemberVO">
+		SELECT mid, mName FROM yf_membership WHERE mLevel >= 10
+	</select>
+	
+	<select id="getBoardList" resultType="com.jeonghwapark.portfolio.model.BoardVO">
+		SELECT * FROM yf_board
+	</select>
+	
+	<delete id="setBoardDelete">
+		DELETE FROM yf_board WHERE boardCode = #{boardCode}
+	</delete>
+	
+	<delete id="setBoardDeleteAll">
+		DELETE FROM yf_board WHERE boardCode = #{boardCode}
+	</delete>
+	
+	<insert id="dropArticleTbl">
+		${str}
+	</insert>
+	
+	<insert id="dropCommentTbl">
+		${str}
+	</insert>
+	
+	<select id="getBoardCountAll" resultType="int">
+		SELECT COUNT(*) FROM yf_board;
+	</select>
+	
+	<select id="getAllBoardCode" resultType="com.jeonghwapark.portfolio.model.BoardVO">
+		SELECT boardCode FROM yf_board;
+	</select>
+</mapper>

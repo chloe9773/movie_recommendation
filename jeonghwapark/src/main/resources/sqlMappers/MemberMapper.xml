@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+	<sql id="searchData">
+		${searchOpt} LIKE CONCAT('%', #{words}, '%')
+	</sql>
+	
+	<select id="getMemberListAll" parameterType="hashmap" resultType="com.jeonghwapark.portfolio.model.MemberVO">
+		SELECT mid, mEmail, mUserName, mName, mBirthdate, mAgeGroup, G.gender as mGenderTitle, mSido, mPostcode, mAddress, mExtraAddress, mFavGenre, 
+			mRegdate, A.auth as mPosition  
+		FROM yf_membership M, yf_authority A, yf_gender G WHERE M.mLevel = A.authLevel AND M.mGender = G.gValue 
+		AND <include refid = "searchData"></include> 
+		ORDER BY mid DESC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getMemberCount" resultType="int">
+		SELECT COUNT(mid) FROM yf_membership WHERE 
+		<include refid="searchData"></include>
+	</select>
+	
+	<select id="getMemberOneInfo" parameterType="int" resultType="com.jeonghwapark.portfolio.model.MemberVO">
+		SELECT mid, mEmail, mUserName, mName, mBirthdate, mAgeGroup, mGender, G.gender as mGenderTitle, mSido, mPostcode, mAddress, mExtraAddress, 
+		mFavGenre, mRegdate, A.auth as mPosition 
+		FROM yf_membership M, yf_authority A, yf_gender G WHERE M.mid = #{mid} AND M.mLevel = A.authLevel AND M.mGender = G.gValue
+	</select>
+</mapper>

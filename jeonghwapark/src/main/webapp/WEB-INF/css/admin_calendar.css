@@ -1,0 +1,27 @@
+@charset 'utf-8';
+
+.setScheduleTitle, .setSchedule, .showSchedule {
+    box-shadow: 3px 3px 3px 3px rgba(0,0,0, .5); 
+    box-shadow: -3px 3px 3px -3px rgba(0,0,0, .5);
+}
+
+.insertTable {
+    border: 1px solid #d6dce7;
+}
+
+form {
+    padding: 0;
+}
+
+.td-10 {
+    width: 10%;
+}
+
+.nav-box a {
+    color: #fff;
+}
+
+.nav a {
+    color: #fff;
+}
+

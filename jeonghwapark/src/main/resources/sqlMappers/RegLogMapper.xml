@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reglog">
+<insert id="setRegisterOne" parameterType="com.jeonghwapark.portfolio.model.MemberVO">
+	INSERT INTO yf_membership SET 
+		mEmail = #{mEmail},
+		mUserName = SUBSTRING_INDEX(#{mEmail}, '@', 1),
+		mPassword = #{mPassword},
+		mName = #{mName},
+		mBirthdate = STR_TO_DATE(CONCAT(#{mBirthYear}, '-', #{mBirthMonth}, '-', #{mBirthDay}), '%Y-%m-%d'),
+		mAgeGroup = FLOOR(((YEAR(CURDATE()) - #{mBirthYear}) + 1) / 10) * 10,
+		mGender = #{mGender},
+		mPostcode = #{mPostcode},
+		mSido = SUBSTRING_INDEX(#{mAddress}, ' ', 1),
+		mAddress = #{mAddress},
+		mExtraAddress = #{mExtraAddress},
+		mFavGenre = #{mFavGenre},
+		mLevel = 1,
+		mRegdate = now()
+</insert>
+
+<select id="chkDuplicatedEmail" parameterType="String" resultType="int">
+	SELECT COUNT(mid) FROM yf_membership WHERE mEmail = #{mEmail};
+</select>
+
+<select id="getMemberOne" parameterType="com.jeonghwapark.portfolio.model.MemberVO" resultType="com.jeonghwapark.portfolio.model.MemberVO">
+	SELECT * FROM yf_membership WHERE mEmail = #{mEmail} AND mPassword = #{mPassword}
+</select>
+
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="auth">
+	<select id="getAuthList" resultType="com.jeonghwapark.portfolio.model.AuthorityVO">
+		SELECT auth, authLevel FROM yf_authority ORDER BY authLevel
+	</select>
+	
+	<select id="getUnansweredQuestion" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+ 		SELECT * FROM yf_question WHERE qCheck = 0
+ 	</select>
+ 	
+ 	<select id="getCountUnansweredQuestion" resultType="int">
+ 		SELECT COUNT(*) FROM yf_question WHERE qCheck = 0
+ 	</select>
+</mapper>

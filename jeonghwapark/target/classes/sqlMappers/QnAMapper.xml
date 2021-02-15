@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qnaMapper">
+	<sql id="search">
+		<choose>
+			<when test = "searchOpt == 'all'">
+				WHERE qTitle LIKE CONCAT('%', #{words}, '%') 
+				OR qWriter LIKE CONCAT('%', #{words}, '%') 
+				OR qContent LIKE CONCAT('%', #{words}, '%')
+			</when>
+			<otherwise> 
+				WHERE ${searchOpt} LIKE CONCAT('%', #{words}, '%')
+			</otherwise>
+		</choose>
+	</sql>
+
+	<select id="getQuestionTotalCount" resultType="int">
+		SELECT COUNT(*) FROM yf_question 
+		<include refid = "search"></include>
+	</select>
+	
+	<select id="getQuestionList" parameterType="hashmap" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+		SELECT * FROM yf_question 
+		<include refid = "search"></include> 
+		ORDER BY ref DESC, reStep ASC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getQuestionOne" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+		SELECT * FROM yf_question WHERE qid = #{qid}
+	</select>
+	
+	<select id="getAnsCount" resultType="int">
+		SELECT COUNT(*) FROM yf_question WHERE qid = #{qid} GROUP BY ref
+	</select>
+	
+	<select id="getQuestionReplyInfo" resultType="com.jeonghwapark.portfolio.model.QuestionVO">
+		SELECT qid, ref, reStep, reLevel FROM yf_question WHERE qid = #{qid}
+	</select>
+	
+	<update id="setQuestionRef" parameterType="com.jeonghwapark.portfolio.model.QuestionVO">
+		UPDATE yf_question SET reStep = reStep + 1, regdate = NOW() WHERE ref = #{ref} AND reStep > #{reStep}	
+	</update>
+	
+	<update id="updateQcheck" parameterType="int">
+		UPDATE yf_question SET qCheck = 1 WHERE ref = #{ref}
+	</update>
+	
+	<insert id="setQuestionReply" >	
+		INSERT INTO yf_question SET qTitle = #{qTitle}, qContent = #{qContent}, qWriter = #{qWriter}, regdate = NOW(), 
+		fileName = #{fileName}, fileOriName = #{fileOriName}, fileUrl = #{fileUrl},
+		ref = #{ref}, reStep = #{reStep} + 1, reLevel = #{reStep} + 1, qCheck = 1
+	</insert>
+	
+	<delete id="articleDelete" parameterType="int">
+		DELETE FROM yf_question WHERE qid = #{qid}
+	</delete>
+	
+	<delete id="commentDelete" parameterType="int">
+		DELETE FROM yf_question_answer WHERE aid = #{aid}
+	</delete>
+
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="article">
+	<sql id="search">
+		<choose>
+			<when test = "searchOpt == 'all'">
+				WHERE title LIKE CONCAT('%', #{words}, '%') 
+				OR writer LIKE CONCAT('%', #{words}, '%') 
+				OR content LIKE CONCAT('%', #{words}, '%')
+			</when>
+			<otherwise> 
+				WHERE ${searchOpt} LIKE CONCAT('%', #{words}, '%')
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="getTotalArticleList" parameterType="hashMap" resultType="com.jeonghwapark.portfolio.model.ArticleVO">
+		SELECT 
+			aid, title, writer, hit, fileOriName, ref, reStep, reLevel, date_format(regdate, '%Y-%m-%d') as regdate, division,
+			(SELECT COUNT(*) FROM yf_comments c WHERE c.aid = a.aid ) AS count 
+		FROM yf_articles a 
+		<include refid = "search"></include>
+		ORDER BY division DESC, aid DESC, ref DESC, reStep ASC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getArticleList" parameterType="hashMap" resultType="com.jeonghwapark.portfolio.model.ArticleVO">
+		SELECT 
+			aid, title, writer, hit, fileOriName, ref, reStep, reLevel, date_format(regdate, '%Y-%m-%d') as regdate, division,
+			(SELECT COUNT(*) FROM yf_comments c WHERE c.aid = a.aid ) AS count 
+		FROM yf_articles a 
+		<include refid = "search"></include>
+		AND boardCode = #{boardCode} 
+		ORDER BY division DESC, aid DESC, ref DESC, reStep ASC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getArticleTotalCount" resultType="int">
+		SELECT COUNT(*) FROM yf_articles 
+		<include refid = "search"></include>
+	</select>
+	
+	<select id="getArticleCount" parameterType="com.jeonghwapark.portfolio.model.ArticleVO" resultType="int">
+		SELECT COUNT(*) FROM yf_articles 
+		<include refid = "search"></include> 
+		AND boardCode = #{boardCode}
+	</select>
+	
+	<select id="getBoardTitle" parameterType="com.jeonghwapark.portfolio.model.BoardVO" resultType="com.jeonghwapark.portfolio.model.BoardVO">
+		SELECT boardTitle FROM yf_board WHERE boardCode = #{boardCode}
+	</select>
+	
+	<insert id="setArticle" >
+	
+		<selectKey resultType="int" keyProperty="ref" order="BEFORE">
+			
+			SELECT IFNULL(MAX(ref), 0) + 1 FROM yf_articles
+			  
+		</selectKey>
+		INSERT INTO yf_articles SET 
+			boardCode = #{boardCode},
+			title = #{title}, 
+			content = #{content}, 
+			writer = #{writer}, 
+			regdate = NOW(), 
+			fileName = #{fileName}, 
+			fileOriName = #{fileOriName}, 
+			fileUrl = #{fileUrl},
+			ref = #{ref}, 
+			reStep = 0, 
+			reLevel = 0,
+			division = #{division}
+	</insert>
+	
+	<select id="getBoardOne" resultType="com.jeonghwapark.portfolio.model.BoardVO">
+		SELECT * FROM yf_board WHERE boardCode = #{boardCode}
+	</select>
+	
+	<select id="getArticleOne" resultType="com.jeonghwapark.portfolio.model.ArticleVO">
+		SELECT * FROM yf_articles WHERE aid = #{aid}
+	</select>
+	
+	<update id="hitUp">
+		UPDATE yf_articles SET hit = hit + 1 WHERE aid = #{aid}
+	</update>
+	
+	<select id="getUserArticleList" parameterType="hashmap" resultType="com.jeonghwapark.portfolio.model.ArticleVO">
+		SELECT aid, B.boardTitle AS boardCode, title, writer, content, hit, likeArticle, hateArticle,
+		regdate, fileName, fileOriName, fileUrl, ref, reStep, reLevel, division FROM yf_board AS B JOIN yf_articles AS A ON B.boardCode = A.boardCode WHERE writer = #{currUser} 
+		ORDER BY regdate DESC LIMIT #{start}, #{end}
+	</select>
+	
+	<select id="getUserArticleCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM  yf_articles  WHERE writer = #{currUser}
+	</select>
+	
+	<select id="getUserCommentCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM  yf_comments  WHERE who = #{currUser}
+	</select>
+</mapper>

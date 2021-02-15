@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comment">
+	<!-- 1:1 문의게시판 -->
+	<insert id="setAnswer" parameterType="com.jeonghwapark.portfolio.model.CommentVO">
+		INSERT INTO yf_question_answer (aid, comment, regdate, who) VALUES (#{aid},#{comment},now(), #{who})
+	</insert>
+	
+	<select id="getAnsCount" parameterType="com.jeonghwapark.portfolio.model.CommentVO" resultType="int">
+		SELECT COUNT(*) FROM yf_question_answer WHERE aid = #{aid}
+	</select>
+	
+	<select id="getAnsList" parameterType="com.jeonghwapark.portfolio.model.CommentVO" resultType="com.jeonghwapark.portfolio.model.CommentVO">
+		SELECT * FROM yf_question_answer WHERE aid = #{aid} ORDER BY cid DESC
+	</select>
+	
+	<delete id="setAnswerDelete" parameterType="int">
+		DELETE FROM yf_question_answer WHERE cid = #{cid}
+	</delete>
+	
+	<update id="setAnswerModify" parameterType="com.jeonghwapark.portfolio.model.CommentVO">
+		UPDATE yf_question_answer SET comment = #{comment} WHERE cid = #{cid}
+	</update>
+	
+	<!-- 커뮤니티 게시판 -->
+	<insert id="setArticleAnswer" parameterType="com.jeonghwapark.portfolio.model.CommentVO">
+		INSERT INTO yf_comments (aid, comment, regdate, who) VALUES (#{aid},#{comment},now(), #{who})
+	</insert>
+	
+	<select id="getArticleAnsCount" parameterType="com.jeonghwapark.portfolio.model.CommentVO" resultType="int">
+		SELECT COUNT(*) FROM yf_comments WHERE aid = #{aid}
+	</select>
+	
+	<select id="getArticleAnsList" parameterType="com.jeonghwapark.portfolio.model.CommentVO" resultType="com.jeonghwapark.portfolio.model.CommentVO">
+		SELECT * FROM yf_comments WHERE aid = #{aid} ORDER BY cid DESC
+	</select>
+	
+</mapper>
